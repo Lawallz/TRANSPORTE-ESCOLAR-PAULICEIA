@@ -1,0 +1,787 @@
+/* ================= VARIÁVEIS ================= */
+:root {
+    --bg: #f0f4f9;
+    --card: #ffffff;
+    --text-dark: #1f2937;
+    --muted: #6b7280;
+    --accent: #2e86de;
+    --accent-light: #52a3f5;
+    --gold: #ffc400;
+    --glass: rgba(0, 0, 0, 0.05);
+    --btn-secondary: #ff3838;
+}
+
+/* ================= RESET ================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, system-ui;
+    background: linear-gradient(135deg, var(--bg), #e6edf4);
+    color: var(--text-dark);
+}
+
+/* ================= LAYOUT ================= */
+.wrap {
+    max-width: 1100px;
+    margin: 36px auto;
+    padding: 28px;
+    opacity: 0;
+    animation: fadeIn 0.6s forwards;
+}
+
+.fade {
+    animation: fadeIn 0.8s forwards;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* ================= HEADER ================= */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.logo {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent), #ff9f1c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 22px rgba(0,0,0,.2);
+}
+
+.logo h1 {
+    font-family: Poppins;
+    color: var(--gold);
+}
+
+.nav-links a {
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.nav-links a:hover {
+    color: var(--accent);
+}
+
+/* ================= HERO ================= */
+.hero-full {
+    background: linear-gradient(135deg, #457b9d, #1d3557);
+    color: white;
+    border-radius: 18px;
+    padding: 64px 40px;
+}
+
+.hero-inner {
+    max-width: 700px;
+}
+
+.hero h1 {
+    font-size: 44px;
+    margin: 12px 0;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #e3edf8;
+    margin-bottom: 26px;
+}
+
+.badge {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+}
+
+/* ================= HERO STATS ================= */
+.hero-stats {
+    display: flex;
+    gap: 28px;
+    margin-top: 36px;
+}
+
+.hero-stats div {
+    text-align: center;
+}
+
+.hero-stats strong {
+    font-size: 26px;
+    display: block;
+}
+
+.hero-stats span {
+    font-size: 13px;
+    color: #dbe7f3;
+}
+
+/* ================= SEÇÕES ================= */
+.section {
+    margin-top: 80px;
+    text-align: center;
+}
+
+.section h2 {
+    font-family: Poppins;
+    font-size: 30px;
+}
+
+.section p {
+    margin-top: 10px;
+}
+
+.section.dark {
+    background: #eef3f9;
+    padding: 60px 30px;
+    border-radius: 20px;
+}
+
+/* ================= GRID ================= */
+.grid {
+    display: grid;
+    gap: 24px;
+    margin-top: 36px;
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* ================= FEATURES ================= */
+.feature {
+    background: var(--card);
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+.feature h3 {
+    margin-bottom: 8px;
+}
+
+/* ================= GALERIA ================= */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 36px;
+}
+
+.gallery img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+    transition: transform .3s ease;
+}
+
+.gallery img:hover {
+    transform: scale(1.05);
+}
+
+/* ================= CTA ================= */
+.cta-mid,
+.cta-final {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    color: white;
+    text-align: center;
+    padding: 60px 30px;
+    border-radius: 22px;
+    margin-top: 80px;
+}
+
+.cta-final {
+    background: #1d3557;
+}
+
+.cta-mid h2,
+.cta-final h2 {
+    margin-bottom: 14px;
+}
+
+/* ================= DEPOIMENTOS ================= */
+.testimonial {
+    background: white;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+.testimonial p {
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+/* ================= BOTÕES ================= */
+.btn {
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.primary {
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    color: white;
+}
+
+.primary:hover {
+    filter: brightness(1.1);
+}
+
+.ghost {
+    border: 2px solid white;
+    color: white;
+    background: transparent;
+}
+
+.big {
+    font-size: 16px;
+    padding: 14px 26px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* ================= FOOTER ================= */
+footer {
+    margin-top: 60px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* ================= WHATSAPP ================= */
+.whatsapp-float {
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,.35);
+    z-index: 999;
+    transition: transform .2s ease;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 900px) {
+    .grid-3,
+    .gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+    }
+}
+
+/* ===================================================
+   COMPATIBILIDADE TOTAL — CONTRATO.HTML
+   =================================================== */
+
+/* Texto utilitário */
+.muted {
+    color: var(--muted);
+}
+
+.small {
+    font-size: 12px;
+}
+
+/* Layout formulário */
+.row {
+    display: flex;
+    gap: 12px;
+}
+
+.col {
+    flex: 1;
+}
+
+/* Grid do contrato */
+.grid-form {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 20px;
+}
+
+@media (max-width: 980px) {
+    .grid-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Preview */
+.preview {
+    background: var(--glass);
+    padding: 14px;
+    border-radius: 12px;
+    border: 2px dashed var(--gold);
+    margin-top: 12px;
+}
+
+/* Documento do contrato */
+.contract {
+    background: var(--card);
+    color: var(--text-dark);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 14px rgba(0,0,0,.12);
+}
+
+.contract h3 {
+    font-family: Poppins;
+    margin-bottom: 8px;
+}
+
+/* Linha divisória */
+.divisor {
+    border: none;
+    border-top: 1px solid rgba(0,0,0,.15);
+    margin: 14px 0;
+}
+
+/* Labels */
+label {
+    display: block;
+    font-size: 13px;
+    margin-top: 8px;
+    color: var(--muted);
+}
+
+/* Inputs */
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background: #f8f8f8;
+    border: 1px solid #d1d5db;
+    color: var(--text-dark);
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(46,134,222,.2);
+}
+
+/* Botões extras */
+.secondary {
+    background: var(--btn-secondary);
+    color: white;
+}
+
+.secondary:hover {
+    filter: brightness(1.1);
+}
+
+/* =========================
+   SCROLL REVEAL
+   ========================= */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .6s ease, transform .6s ease;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* LGPD */
+
+.lgpd {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    max-width: 320px;
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    z-index: 999;
+}
+
+.lgpd p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+/* ===================================================
+   POLIMENTO VISUAL — NÃO REMOVER CSS ACIMA
+   =================================================== */
+
+body {
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.nav-links a {
+    position: relative;
+    transition: color .2s ease;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: width .25s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.hero-full {
+    box-shadow: 0 18px 45px rgba(0,0,0,.25);
+}
+
+.feature {
+    transition: box-shadow .25s ease, transform .25s ease;
+}
+
+.feature:hover {
+    box-shadow: 0 10px 28px rgba(0,0,0,.12);
+    transform: translateY(-4px);
+}
+
+.testimonial {
+    transition: box-shadow .25s ease;
+}
+
+.testimonial:hover {
+    box-shadow: 0 10px 28px rgba(0,0,0,.14);
+}
+
+.btn {
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.primary:hover {
+    box-shadow: 0 8px 22px rgba(46,134,222,.35);
+}
+
+.secondary:hover {
+    box-shadow: 0 8px 22px rgba(255,56,56,.35);
+}
+
+.gallery img {
+    box-shadow: 0 6px 18px rgba(0,0,0,.15);
+}
+
+.lgpd {
+    animation: lgpdIn .4s ease forwards;
+}
+
+@keyframes lgpdIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================= LIGHTBOX ================= */
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+    z-index: 2000;
+}
+
+.lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.lightbox img {
+    max-width: 90%;
+    max-height: 85vh;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    animation: zoomIn .3s ease;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* ================= LOGO ================= */
+
+.logo {
+    width: 220px;
+    height: auto;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    border-radius: 16px;
+}
+
+/* ===================================================
+   INFORMAÇÕES DE SAÚDE — CONTRATO
+   =================================================== */
+
+.saude-aluno {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 14px;
+    background: linear-gradient(
+        135deg,
+        rgba(46,134,222,0.06),
+        rgba(46,134,222,0.02)
+    );
+    border: 1px solid rgba(46,134,222,0.15);
+}
+
+.saude-aluno h4 {
+    font-family: Poppins;
+    font-size: 15px;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.saude-aluno p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+/* Grid interno */
+.saude-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 700px) {
+    .saude-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Labels */
+.saude-aluno label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+}
+
+/* Textareas */
+.saude-aluno textarea {
+    width: 100%;
+    min-height: 70px;
+    resize: vertical;
+    padding: 10px;
+    border-radius: 10px;
+    background: #f8f8f8;
+    border: 1px solid #d1d5db;
+    color: var(--text-dark);
+    font-family: Inter, system-ui;
+    font-size: 13px;
+    transition: border .2s ease, box-shadow .2s ease;
+}
+
+.saude-aluno textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(46,134,222,.2);
+}
+
+/* Placeholder */
+.saude-aluno textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* Aviso */
+.saude-info {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.saude-info::before {
+    content: "ℹ️";
+    font-size: 13px;
+}
+
+/* ================= EQUIPES ================= */
+
+.equipes-grid {
+    margin-top: 40px;
+}
+
+.equipe-card {
+    background: var(--card);
+    padding: 26px;
+    border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(0,0,0,.1);
+    text-align: center;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.equipe-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 32px rgba(0,0,0,.14);
+}
+
+.equipe-card h3 {
+    font-family: Poppins;
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.equipe-galeria {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.equipe-galeria img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform .25s ease;
+}
+
+.equipe-galeria img:hover {
+    transform: scale(1.05);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+    .equipe-galeria {
+        grid-template-columns: 1fr;
+    }
+
+    .equipe-galeria img {
+        height: 180px;
+    }
+}
+
+/* ================= CONTRATO SCROLL ================= */
+
+.preview {
+    max-height: 80vh;      /* limita à tela */
+    overflow-y: auto;      /* permite rolagem */
+}
+
+.contract {
+    height: auto;
+    overflow: visible;
+}
+
+
+/* ================= SOCIAL FLOAT ================= */
+
+.social-float {
+    position: fixed;
+    right: 22px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,.35);
+    z-index: 998;
+    transition: transform .2s ease;
+}
+
+.social-float:hover {
+    transform: scale(1.1);
+}
+
+/* Posicionamento em pilha */
+.social-float.instagram {
+    bottom: 96px;
+    background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af);
+}
+
+.social-float.facebook {
+    bottom: 164px;
+    background: #1877f2;
+}
+
+@media print {
+    body {
+        background: #fff;
+    }
+
+    .preview {
+        overflow: visible;
+        max-height: none;
+        border: none;
+    }
+
+    h4 {
+        page-break-before: always;
+    }
+}
