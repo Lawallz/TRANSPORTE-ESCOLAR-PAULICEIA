@@ -785,3 +785,9 @@ body {
         page-break-before: always;
     }
 }
+
+@media (max-width: 768px) {
+    .hero .btn.primary.small {
+        display: none;
+    }
+}
