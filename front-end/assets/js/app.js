@@ -77,22 +77,37 @@ const VALORES = {
     }
 };
 
-// ================= MAPA CEP → BAIRRO =================
+// ================= MAPA CEP → BAIRRO CORRIGIDO =================
 function bairroPorCep(cep){
     if (!cep) return null;
 
+    // Remove caracteres não numéricos e converte para número
     const n = parseInt(cep.replace(/\D/g, ''), 10);
     if (isNaN(n)) return null;
 
-    if (n >= 9650000 && n <= 9689999) return "Pauliceia";
+    // --- DIADEMA (Faixas 099xxxx) ---
+    // Canhema (09940-000 a 09945-999) - Inclui Taboão
+    if (n >= 9940000 && n <= 9945999) return "Canhema/Taboão";
+    // Nacoes (09960-000 a 09969-999)
+    if (n >= 9960000 && n <= 9969999) return "Nacoes";
+    
+    // --- SÃO BERNARDO DO CAMPO (Faixas 096xxxx) ---
+    // PRIORIZE as faixas específicas primeiro!
+    
+    // Vila Florida (09635-000 a 09639-999)
+    if (n >= 9635000 && n <= 9639999) return "VilaFlorida";
+    // Vila Oriental (09667-000 a 09669-999)
+    if (n >= 9667000 && n <= 9669999) return "VilaOriental";
+    // Borborema (09685-000 a 09687-999)
+    if (n >= 9685000 && n <= 9687999) return "Borborema";
+    // Vila Alice (09680-000 a 09684-999)
     if (n >= 9680000 && n <= 9684999) return "VilaAlice";
-    if (n >= 9941000 && n <= 9990999) return "Canhema";
-    if (n >= 9670000 && n <= 9674999) return "VilaOriental";
-    if (n >= 9675000 && n <= 9677999) return "SantaCruz";
-    if (n >= 9650000 && n <= 9672999) return "TaboaoDiadema";
-    if (n >= 9660000 && n <= 9662999) return "VilaFlorida";
-    if (n >= 9685000 && n <= 9687999) return "Nacoes";
-    if (n >= 9663000 && n <= 9666999) return "Borborema";
+    
+    // Faixas mais amplas de SBC
+    // Paulicéia (09650-000 a 09699-999) - Ajustada para não conflitar
+    if (n >= 9650000 && n <= 9699999) return "Pauliceia"; 
+    // Santa Cruz (09600-000 a 09609-999)
+    if (n >= 9600000 && n <= 9609999) return "SantaCruz";
 
     return null;
 }
