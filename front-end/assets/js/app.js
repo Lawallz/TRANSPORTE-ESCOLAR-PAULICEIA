@@ -1,3 +1,5 @@
+let CONTRATO_DADOS = {};
+
 // ================= UTIL =================
 function formatBR(v){
     return v.toLocaleString('pt-BR', {
@@ -221,6 +223,22 @@ function montarContrato(){
         valorFinal = valorFinal * 0.95;
     }
 
+CONTRATO_DADOS = {
+    nomeResp: document.getElementById("resp")?.value || "—",
+    cpfResp: document.getElementById("cpf")?.value || "—",
+    telResp: document.getElementById("tel")?.value || "—",
+    escola: document.getElementById("escola")?.value || "—",
+
+    endereco: document.getElementById("end")?.value || "—",
+    cep: document.getElementById("cepIda")?.value || "—",
+
+    valorTotal: formatBR(valorFinal),
+    parcelas: parcelas,
+    valorParcela: formatBR(valorFinal / parcelas),
+
+    alunos: calc.criancas.join(", "),
+};
+
     return {
         resp: document.getElementById('resp')?.value || '—',
         cpf: document.getElementById('cpf')?.value || '—',
@@ -243,7 +261,7 @@ CEP volta: ${calc.cepVolta} (${calc.bairroVolta})`,
 
         valorMensal: valorFinal,
         parcelas: parcelas,
-        valorParcela: valorFinal
+        valorParcela: valorFinal / parcelas
 
     };
 }
@@ -416,6 +434,14 @@ questões oriundas do presente contrato.
 <br>
 
 <p>
+Considera-se inviável a operação quando o número de alunos transportados
+no dia for insuficiente para cobrir os custos mínimos operacionais,
+observado como referência percentual mínimo de <strong>2% do total de alunos</strong>.
+</p>
+
+<br>
+
+<p>
 <strong>Assinatura do responsável:</strong><br>
 ${c.assinatura}
 </p>
@@ -426,9 +452,6 @@ ${c.assinatura}
 }
 
 // ================= EVENTOS =================
-document.getElementById('simular')?.addEventListener('click', () => {
-    try { atualizarPreview(); } catch(e){}
-});
 
 document.getElementById('limpar')?.addEventListener('click', () => {
     document.querySelectorAll('input').forEach(e => e.value = '');
@@ -497,4 +520,44 @@ document.getElementById('copiarTexto')?.addEventListener('click', () => {
         document.getElementById('contractDoc').innerText
     );
     alert("Contrato copiado!");
+});
+
+/* =========================================================
+   ENVIO DO CONTRATO PARA GOOGLE SHEETS
+   (100% compatível com seu HTML e Apps Script)
+========================================================= */
+
+document.getElementById("simular").addEventListener("click", function () {
+
+    try {
+        atualizarPreview(); // gera o contrato VISUAL
+    } catch (e) {
+        return;
+    }
+
+    const dados = new FormData();
+
+    dados.append("nomeResp", CONTRATO_DADOS.nomeResp);
+    dados.append("cpfResp", CONTRATO_DADOS.cpfResp);
+    dados.append("telResp", CONTRATO_DADOS.telResp);
+    dados.append("escola", CONTRATO_DADOS.escola);
+
+    dados.append("endereco", CONTRATO_DADOS.endereco);
+    dados.append("cep", CONTRATO_DADOS.cep);
+
+    dados.append("valorTotal", CONTRATO_DADOS.valorTotal);
+    dados.append("parcelamento", CONTRATO_DADOS.parcelas);
+    dados.append("valorParcela", CONTRATO_DADOS.valorParcela);
+
+    dados.append("alunosNomes", CONTRATO_DADOS.alunos);
+
+    dados.append(
+        "contratoTexto",
+        document.getElementById("contratoConteudo")?.innerText || ""
+    );
+
+    fetch("https://script.google.com/macros/s/AKfycby9M_49QZOaFVjMLJ9LNs-qz4ROlKYZ0TjJOmtsFxGTnT0lm9dyjEY9Z7vqlVRH19vj/exec", {
+        method: "POST",
+        body: dados
+    });
 });
