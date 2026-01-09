@@ -167,25 +167,72 @@ function validarCriancas(){
     Bairro de residência do aluno conforme área de atendimento.
 </small>
 
-function montarContrato(){
+// Função para calcular o valor baseado nos bairros de ida e volta
+function calcularValor() {
+    const bairroIda = document.getElementById('bairroIda')?.value;
+    const bairroVolta = document.getElementById('bairroVolta')?.value;
+
+    // Verifica se os bairros foram selecionados
+    if (!bairroIda || !bairroVolta) {
+        alert("Por favor, selecione os bairros de ida e volta.");
+        return { total: 0, cepIda: '—', cepVolta: '—', bairroIda: '—', bairroVolta: '—', criancas: [] };
+    }
+
+    // Definindo o tipo de valor (diurna ou fausto)
+    let tipoValor = "diurna"; // Pode ser alterado para "fausto" conforme a lógica que você usa para escolher o tipo de valor
+
+    // Obtendo os valores dos bairros de ida e volta
+    const valorIda = VALORES[tipoValor][bairroIda] || 0;
+    const valorVolta = VALORES[tipoValor][bairroVolta] || 0;
+
+    // Se algum valor de bairro não for encontrado, retorna erro
+    if (valorIda === 0 || valorVolta === 0) {
+        alert("Valor para o bairro não encontrado.");
+        return { total: 0, cepIda: '—', cepVolta: '—', bairroIda: '—', bairroVolta: '—', criancas: [] };
+    }
+
+    // Calculando o total (ida + volta)
+    const total = valorIda + valorVolta;
+
+    // Atribuindo valores de CEP (deixe fixo ou ajuste conforme necessário)
+    const cepIda = "00000-000";  // Substitua com os CEPs reais se necessário
+    const cepVolta = "00000-000"; // Substitua com os CEPs reais se necessário
+
+    // Pegando os nomes das crianças
+    const criancas = obterCriancas();
+
+    return {
+        total: total,
+        cepIda: cepIda,
+        cepVolta: cepVolta,
+        bairroIda: bairroIda,
+        bairroVolta: bairroVolta,
+        criancas: criancas
+    };
+}
+
+// Função para montar o contrato
+function montarContrato() {
+    // Valida as crianças
     if (!validarCriancas()) {
         throw new Error('Validação falhou');
     }
 
+    // Chama a função calcularValor para obter os dados de valores, CEPs, bairros e crianças
     const calc = calcularValor();
 
-    // garante valor padrão caso a UI ainda não tenha rodado
-    const parcelas = typeof parcelasSelecionadas === 'number'
-        ? parcelasSelecionadas
-        : 12;
+    // Garante que o número de parcelas seja válido
+    const parcelas = typeof parcelasSelecionadas === 'number' ? parcelasSelecionadas : 12;
 
+    // Calcula o valor final do contrato
     let valorFinal = calc.total;
 
-    // 5% de desconto à vista
+    // Aplica o desconto de 5% para pagamento à vista
     if (parcelas === 1) {
         valorFinal = valorFinal * 0.95;
     }
 
+    // Preenche os dados do contrato
     CONTRATO_DADOS = {
         nomeResp: document.getElementById("resp")?.value || "—",
         cpfResp: document.getElementById("cpf")?.value || "—",
@@ -199,45 +246,10 @@ function montarContrato(){
         parcelas: parcelas,
         valorParcela: formatBR(valorFinal / parcelas),
 
-        alunos: calc.criancas.join(", "),
+        alunos: calc.criancas.join(", "),  // Os nomes das crianças
     };
 
-// ================= CONTRATO =================
-function montarContrato(){
-    if (!validarCriancas()) {
-        throw new Error('Validação falhou');
-    }
-
-    const calc = calcularValor();
-
-    // garante valor padrão caso a UI ainda não tenha rodado
-    const parcelas = typeof parcelasSelecionadas === 'number'
-        ? parcelasSelecionadas
-        : 12;
-
-    let valorFinal = calc.total;
-
-    // 5% de desconto à vista
-    if (parcelas === 1) {
-        valorFinal = valorFinal * 0.95;
-    }
-
-CONTRATO_DADOS = {
-    nomeResp: document.getElementById("resp")?.value || "—",
-    cpfResp: document.getElementById("cpf")?.value || "—",
-    telResp: document.getElementById("tel")?.value || "—",
-    escola: document.getElementById("escola")?.value || "—",
-
-    endereco: document.getElementById("end")?.value || "—",
-    cep: document.getElementById("cepIda")?.value || "—",
-
-    valorTotal: formatBR(valorFinal),
-    parcelas: parcelas,
-    valorParcela: formatBR(valorFinal / parcelas),
-
-    alunos: calc.criancas.join(", "),
-};
-
+    // Retorna o objeto com todas as informações para o contrato
     return {
         resp: document.getElementById('resp')?.value || '—',
         cpf: document.getElementById('cpf')?.value || '—',
@@ -252,18 +264,19 @@ CONTRATO_DADOS = {
         transtornos: document.getElementById('transtornos')?.value || 'Não informado',
         limitacoes: document.getElementById('limitacoes')?.value || 'Não informado',
 
-        alunos: calc.criancas.join(', '),
+        alunos: calc.criancas.join(', '),  // Nome das crianças
 
-        bairroTexto:
-`CEP ida: ${calc.cepIda} (${calc.bairroIda})
-CEP volta: ${calc.cepVolta} (${calc.bairroVolta})`,
+        bairroTexto: `
+            CEP ida: ${calc.cepIda} (${calc.bairroIda})<br>
+            CEP volta: ${calc.cepVolta} (${calc.bairroVolta})
+        `,
 
         valorMensal: valorFinal,
         parcelas: parcelas,
         valorParcela: valorFinal / parcelas
-
     };
 }
+
 
 // ================= PREVIEW =================
 function atualizarPreview(){
