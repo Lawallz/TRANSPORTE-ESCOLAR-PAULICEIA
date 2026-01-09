@@ -167,6 +167,41 @@ function validarCriancas(){
     Bairro de residência do aluno conforme área de atendimento.
 </small>
 
+function montarContrato(){
+    if (!validarCriancas()) {
+        throw new Error('Validação falhou');
+    }
+
+    const calc = calcularValor();
+
+    // garante valor padrão caso a UI ainda não tenha rodado
+    const parcelas = typeof parcelasSelecionadas === 'number'
+        ? parcelasSelecionadas
+        : 12;
+
+    let valorFinal = calc.total;
+
+    // 5% de desconto à vista
+    if (parcelas === 1) {
+        valorFinal = valorFinal * 0.95;
+    }
+
+    CONTRATO_DADOS = {
+        nomeResp: document.getElementById("resp")?.value || "—",
+        cpfResp: document.getElementById("cpf")?.value || "—",
+        telResp: document.getElementById("tel")?.value || "—",
+        escola: document.getElementById("escola")?.value || "—",
+
+        endereco: document.getElementById("end")?.value || "—",
+        cep: document.getElementById("cepIda")?.value || "—",  // Aqui está o CEP de ida
+
+        valorTotal: formatBR(valorFinal),
+        parcelas: parcelas,
+        valorParcela: formatBR(valorFinal / parcelas),
+
+        alunos: calc.criancas.join(", "),
+    };
+
 // ================= CONTRATO =================
 function montarContrato(){
     if (!validarCriancas()) {
