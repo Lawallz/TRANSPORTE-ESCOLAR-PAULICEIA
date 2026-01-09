@@ -77,40 +77,24 @@ const VALORES = {
     }
 };
 
-// ================= MAPA CEP → BAIRRO CORRIGIDO =================
-function bairroPorCep(cep){
-    if (!cep) return null;
+// Atualizada para verificar o bairro diretamente
+function bairroPorNome(nomeBairro){
+    if (!nomeBairro) return null;
 
-    // Remove caracteres não numéricos e converte para número
-    const n = parseInt(cep.replace(/\D/g, ''), 10);
-    if (isNaN(n)) return null;
+    const bairros = {
+        "Canhema/Taboão": "Canhema/Taboão",
+        "Nacoes": "Nacoes",
+        "VilaFlorida": "Vila Florida",
+        "VilaOriental": "Vila Oriental",
+        "Borborema": "Borborema",
+        "VilaAlice": "Vila Alice",
+        "Pauliceia": "Pauliceia",
+        "SantaCruz": "Santa Cruz"
+    };
 
-    // --- DIADEMA (Faixas 099xxxx) ---
-    // Canhema (09940-000 a 09945-999) - Inclui Taboão
-    if (n >= 9940000 && n <= 9945999) return "Canhema/Taboão";
-    // Nacoes (09960-000 a 09969-999)
-    if (n >= 9960000 && n <= 9969999) return "Nacoes";
-    
-    // --- SÃO BERNARDO DO CAMPO (Faixas 096xxxx) ---
-    // PRIORIZE as faixas específicas primeiro!
-    
-    // Vila Florida (09635-000 a 09639-999)
-    if (n >= 9635000 && n <= 9639999) return "VilaFlorida";
-    // Vila Oriental (09667-000 a 09669-999)
-    if (n >= 9667000 && n <= 9669999) return "VilaOriental";
-    // Borborema (09685-000 a 09687-999)
-    if (n >= 9685000 && n <= 9687999) return "Borborema";
-    // Vila Alice (09680-000 a 09684-999)
-    if (n >= 9680000 && n <= 9684999) return "VilaAlice";
-    
-    // Faixas mais amplas de SBC
-    // Paulicéia (09650-000 a 09699-999) - Ajustada para não conflitar
-    if (n >= 9650000 && n <= 9699999) return "Pauliceia"; 
-    // Santa Cruz (09600-000 a 09609-999)
-    if (n >= 9600000 && n <= 9609999) return "SantaCruz";
-
-    return null;
+    return bairros[nomeBairro] || null;
 }
+
 
 // ================= NOMES DAS CRIANÇAS =================
 function obterCriancas(){
@@ -142,19 +126,17 @@ function calcularValor() {
     const route = document.getElementById('routeType')?.value;
     const serviceType = document.getElementById('serviceType')?.value;
 
-    const cepIda = document.getElementById('cepIda')?.value;
-    const cepVolta = document.getElementById('cepVolta')?.value;
+    // Agora vamos pegar os bairros diretamente dos selects
+    const bairroIda = document.getElementById('bairroIda')?.value;
+    const bairroVolta = document.getElementById('bairroVolta')?.value;
 
-    const bairroIda = bairroPorCep(cepIda);
-    const bairroVolta = bairroPorCep(cepVolta);
-
-   if (!bairroIda || !bairroVolta) {
-    alert(
-        'CEP inválido ou fora da área atendida.\n' +
-        'Entre em contato para confirmação manual.'
-    );
-    throw new Error('CEP inválido');
-}
+    // Verificando se os bairros foram corretamente selecionados
+    if (!bairroIda || !bairroVolta) {
+        alert(
+            'Por favor, selecione os bairros para ambos os trajetos (ida e volta).'
+        );
+        throw new Error('Bairro inválido');
+    }
 
     const qtdCriancas = parseInt(
         document.getElementById('qtdCriancas')?.value || 1
@@ -167,7 +149,7 @@ function calcularValor() {
         !VALORES[route][bairroVolta]
     ) {
         alert(
-            'Este CEP exige confirmação manual.\n' +
+            'Este bairro exige confirmação manual.\n' +
             'Você será direcionado para o WhatsApp.'
         );
 
@@ -175,7 +157,7 @@ function calcularValor() {
             'https://wa.me/5511940327711?text=' +
             encodeURIComponent(
                 `Olá! Gostaria de confirmar o valor do transporte escolar.\n` +
-                `CEP ida: ${cepIda}\nCEP volta: ${cepVolta}`
+                `Bairro ida: ${bairroIda}\nBairro volta: ${bairroVolta}`
             ),
             '_blank'
         );
@@ -192,28 +174,27 @@ function calcularValor() {
             (VALORES[route][bairroVolta] * 0.5);
     }
 
-   if (serviceType === 'so_ida') {
-    valorBase = VALORES[route][bairroIda] * 0.5;
-}
+    if (serviceType === 'so_ida') {
+        valorBase = VALORES[route][bairroIda] * 0.5;
+    }
 
-if (serviceType === 'so_volta') {
-    valorBase = VALORES[route][bairroVolta] * 0.5;
-}
+    if (serviceType === 'so_volta') {
+        valorBase = VALORES[route][bairroVolta] * 0.5;
+    }
 
     let total = 0;
 
-        for (let i = 0; i < qtdCriancas; i++) {
+    // Cálculo do valor total considerando o número de crianças
+    for (let i = 0; i < qtdCriancas; i++) {
         if (i === 0) total += valorBase;
         else if (i === 1) total += valorBase * 0.9;
         else total += valorBase * 0.85;
-}
+    }
 
     return {
         total,
         bairroIda,
         bairroVolta,
-        cepIda,
-        cepVolta,
         criancas: obterCriancas()
     };
 }
