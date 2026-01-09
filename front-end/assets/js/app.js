@@ -121,83 +121,51 @@ function validarCriancas(){
     return true;
 }
 
-// ================= CALCULO =================
-function calcularValor() {
-    const route = document.getElementById('routeType')?.value;
-    const serviceType = document.getElementById('serviceType')?.value;
+    <label for="bairro">Bairro de Ida</label>
+<select id="bairroIda">
+    <option value="">Selecione o bairro</option>
 
-    // Agora vamos pegar os bairros diretamente dos selects
-    const bairroIda = document.getElementById('bairroIda')?.value;
-    const bairroVolta = document.getElementById('bairroVolta')?.value;
+    <!-- DIADEMA -->
+    <optgroup label="Diadema">
+        <option value="Canhema/Taboao">Canhema / Taboão</option>
+        <option value="Nacoes">Nações</option>
+    </optgroup>
 
-    // Verificando se os bairros foram corretamente selecionados
-    if (!bairroIda || !bairroVolta) {
-        alert(
-            'Por favor, selecione os bairros para ambos os trajetos (ida e volta).'
-        );
-        throw new Error('Bairro inválido');
-    }
+    <!-- SÃO BERNARDO DO CAMPO -->
+    <optgroup label="São Bernardo do Campo">
+        <option value="VilaFlorida">Vila Flórida</option>
+        <option value="VilaOriental">Vila Oriental</option>
+        <option value="Borborema">Borborema</option>
+        <option value="VilaAlice">Vila Alice</option>
+        <option value="Pauliceia">Paulicéia</option>
+        <option value="SantaCruz">Santa Cruz</option>
+    </optgroup>
+</select>
 
-    const qtdCriancas = parseInt(
-        document.getElementById('qtdCriancas')?.value || 1
-    );
+<label for="bairro">Bairro de Volta</label>
+<select id="bairroVolta">
+    <option value="">Selecione o bairro</option>
 
-    // fallback WhatsApp (continua funcionando)
-    if (
-        !VALORES[route] ||
-        !VALORES[route][bairroIda] ||
-        !VALORES[route][bairroVolta]
-    ) {
-        alert(
-            'Este bairro exige confirmação manual.\n' +
-            'Você será direcionado para o WhatsApp.'
-        );
+    <!-- DIADEMA -->
+    <optgroup label="Diadema">
+        <option value="Canhema/Taboao">Canhema / Taboão</option>
+        <option value="Nacoes">Nações</option>
+    </optgroup>
 
-        window.open(
-            'https://wa.me/5511940327711?text=' +
-            encodeURIComponent(
-                `Olá! Gostaria de confirmar o valor do transporte escolar.\n` +
-                `Bairro ida: ${bairroIda}\nBairro volta: ${bairroVolta}`
-            ),
-            '_blank'
-        );
-
-        throw new Error('Valor manual');
-    }
-
-    let valorBase = 0;
-
-    // 🔥 REGRA DE CÁLCULO POR TIPO DE SERVIÇO
-    if (serviceType === 'ida_volta') {
-        valorBase =
-            (VALORES[route][bairroIda] * 0.5) +
-            (VALORES[route][bairroVolta] * 0.5);
-    }
-
-    if (serviceType === 'so_ida') {
-        valorBase = VALORES[route][bairroIda] * 0.5;
-    }
-
-    if (serviceType === 'so_volta') {
-        valorBase = VALORES[route][bairroVolta] * 0.5;
-    }
-
-    let total = 0;
-
-    // Cálculo do valor total considerando o número de crianças
-    for (let i = 0; i < qtdCriancas; i++) {
-        if (i === 0) total += valorBase;
-        else if (i === 1) total += valorBase * 0.9;
-        else total += valorBase * 0.85;
-    }
-
-    return {
-        total,
-        bairroIda,
-        bairroVolta,
-        criancas: obterCriancas()
-    };
-}
+    <!-- SÃO BERNARDO DO CAMPO -->
+    <optgroup label="São Bernardo do Campo">
+        <option value="VilaFlorida">Vila Flórida</option>
+        <option value="VilaOriental">Vila Oriental</option>
+        <option value="Borborema">Borborema</option>
+        <option value="VilaAlice">Vila Alice</option>
+        <option value="Pauliceia">Paulicéia</option>
+        <option value="SantaCruz">Santa Cruz</option>
+    </optgroup>
+</select>
+    
+<small class="muted">
+    Bairro de residência do aluno conforme área de atendimento.
+</small>
 
 // ================= CONTRATO =================
 function montarContrato(){
