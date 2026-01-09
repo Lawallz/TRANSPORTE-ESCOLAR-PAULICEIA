@@ -128,15 +128,30 @@
         <option value="integral">Integral</option>
     </select>
 
-    <label>CEP de ida</label>
-    <input id="cepIda" type="text" placeholder="00000-000">
+    <label for="bairro">Bairro do aluno</label>
+<select id="bairro">
+    <option value="">Selecione o bairro</option>
 
-    <label>CEP de volta</label>
-    <input id="cepVolta" type="text" placeholder="00000-000">
+    <!-- DIADEMA -->
+    <optgroup label="Diadema">
+        <option value="Canhema/Taboao">Canhema / Taboão</option>
+        <option value="Nacoes">Nações</option>
+    </optgroup>
 
-    <small class="muted">
-        O bairro será identificado automaticamente pelo CEP.
-    </small>
+    <!-- SÃO BERNARDO DO CAMPO -->
+    <optgroup label="São Bernardo do Campo">
+        <option value="VilaFlorida">Vila Flórida</option>
+        <option value="VilaOriental">Vila Oriental</option>
+        <option value="Borborema">Borborema</option>
+        <option value="VilaAlice">Vila Alice</option>
+        <option value="Pauliceia">Paulicéia</option>
+        <option value="SantaCruz">Santa Cruz</option>
+    </optgroup>
+</select>
+
+<small class="muted">
+    Bairro de residência do aluno conforme área de atendimento.
+</small>
 
     <label>Data de início do serviço</label>
     <input id="data_inicio" type="date">
