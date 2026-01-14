@@ -1,4 +1,13 @@
 let CONTRATO_DADOS = {};
+const VALOR_CONTRA_TURNO = 1800;
+
+document.getElementById("cpf").addEventListener("input", e => {
+    e.target.value = e.target.value
+        .replace(/\D/g, '')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+});
 
 // ================= UTIL =================
 function formatBR(v){
@@ -61,21 +70,37 @@ const VALORES = {
     VilaFlorida: 3000,      // 12x 250
     Borborema: 3000,        // 12x 250
     TaboaoDiadema: 3120,    // 12x 260
-    TaboaoSBC: 3270,        // 12x 272,50
-    Nacoes: 3400            // 12x 283,33
+    TaboaoSBC: 3240,        // 12x 272,50
+    Nacoes: 3360,            // 12x 283,33
+    VilaSantaLuzia: 3240   // 12x 270
   },
 
   // ================= ROTA FAUSTO (14h às 21h) =================
   fausto: {
-    Pauliceia: 3490,        // 12x 290
-    Canhema: 3600,          // 12x 300
-    JdABC: 3720,            // 12x 310
-    JdTakebe: 3720,         // 12x 310
-    VilaFlorida: 3840,      // 12x 320
-    Borborema: 3840,        // 12x 320
-    TaboaoDiadema: 3840     // 12x 320
+    Pauliceia: 3720,        // 12x 290
+    Canhema: 3840,          // 12x 300
+    JdABC: 3960,            // 12x 310
+    JdTakebe: 3960,         // 12x 310
+    VilaFlorida: 4080,      // 12x 320
+    Borborema: 4080,        // 12x 320
+    TaboaoDiadema: 4080     // 12x 320
   }
 };
+
+function handleServiceType() {
+    const serviceType = document.getElementById('serviceType');
+    const escolaDiv = document.getElementById('contraTurnoEscola');
+
+    if (!serviceType || !escolaDiv) return;
+
+    if (serviceType.value === 'contra_turno') {
+        escolaDiv.style.display = 'block';
+    } else {
+        escolaDiv.style.display = 'none';
+        const escolaSelect = document.getElementById('escolaContraTurno');
+        if (escolaSelect) escolaSelect.value = '';
+    }
+}
 
 // Atualizada para verificar o bairro diretamente
 function bairroPorNome(nomeBairro){
@@ -141,17 +166,23 @@ function atualizarCamposCriancas() {
 }
 
 
-// Função para calcular o valor baseado nos bairros de ida e volta
 function calcularValor() {
     const bairroIda = document.getElementById('bairroIda')?.value;
     const bairroVolta = document.getElementById('bairroVolta')?.value;
     const tipoServico = document.getElementById('serviceType')?.value || 'ida_volta';
     const tipoRota = document.getElementById('routeType')?.value || 'diurna';
+    const escolaContraTurno = document.getElementById('escolaContraTurno')?.value;
+
+    const criancas = obterCriancas();
+    const qtdCriancas = criancas.length;
 
     let total = 0;
 
+    // ================= BASE (ROTAS) =================
+    const servicoBase = tipoServico === 'contra_turno' ? 'ida_volta' : tipoServico;
+
     // ================= IDA + VOLTA =================
-    if (tipoServico === 'ida_volta') {
+    if (servicoBase === 'ida_volta') {
         if (!bairroIda || !bairroVolta) {
             alert("Selecione bairro de ida e de volta.");
             throw new Error('Bairros incompletos');
@@ -169,14 +200,13 @@ function calcularValor() {
     }
 
     // ================= SÓ IDA =================
-    if (tipoServico === 'so_ida') {
+    if (servicoBase === 'so_ida') {
         if (!bairroIda) {
             alert("Selecione o bairro de ida.");
             throw new Error('Bairro ida ausente');
         }
 
         const valor = VALORES[tipoRota][bairroIda];
-
         if (!valor) {
             alert("Valor do bairro não encontrado.");
             throw new Error('Valor inválido');
@@ -186,14 +216,13 @@ function calcularValor() {
     }
 
     // ================= SÓ VOLTA =================
-    if (tipoServico === 'so_volta') {
+    if (servicoBase === 'so_volta') {
         if (!bairroVolta) {
             alert("Selecione o bairro de volta.");
             throw new Error('Bairro volta ausente');
         }
 
         const valor = VALORES[tipoRota][bairroVolta];
-
         if (!valor) {
             alert("Valor do bairro não encontrado.");
             throw new Error('Valor inválido');
@@ -202,13 +231,67 @@ function calcularValor() {
         total = valor * 0.7;
     }
 
+    // ================= MULTIPLICA POR CRIANÇAS =================
+    total *= qtdCriancas;
+
+    // ================= DESCONTO POR IRMÃOS =================
+    if (qtdCriancas >= 2) {
+        total *= 0.90; // 10% de desconto
+    }
+
+    // ================= CONTRA TURNO =================
+    if (tipoServico === 'contra_turno') {
+        if (!escolaContraTurno) {
+            alert("Selecione a escola do contra turno.");
+            throw new Error('Escola contra turno ausente');
+        }
+
+        total += VALOR_CONTRA_TURNO;
+        total *= 0.95; // 5% de desconto do contra turno
+    }
+
     return {
         total,
         bairroIda: bairroIda || '—',
         bairroVolta: bairroVolta || '—',
-        criancas: obterCriancas()
+        criancas,
+        tipoServico,
+        escolaContraTurno: escolaContraTurno || '—'
     };
 }
+
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, '');
+
+    if (cpf.length !== 11) return false;
+
+    // Elimina CPFs inválidos conhecidos
+    if (/^(\d)\1+$/.test(cpf)) return false;
+
+    let soma = 0;
+    let resto;
+
+    // Primeiro dígito
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+    soma = 0;
+
+    // Segundo dígito
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+
+    return true;
+}
+
 
 // Função para montar o contrato
 function montarContrato() {
@@ -229,17 +312,33 @@ function montarContrato() {
 
     let valorFinal = calc.total;
 
+
+    // ================= DESCONTO CONTRA TURNO =================
+    if (calc.tipoServico === 'contra_turno') {
+        valorFinal *= 0.95; // 5% de desconto
+    }
+
     // Desconto à vista
     if (parcelas === 1) {
         valorFinal = valorFinal * 0.95;
     }
 
     // ================= DADOS =================
-    const resp = document.getElementById("resp")?.value || "—";
-    const cpf = document.getElementById("cpf")?.value || "—";
-    const tel = document.getElementById("tel")?.value || "—";
-    const escola = document.getElementById("escola")?.value || "—";
-    const endereco = document.getElementById("end")?.value || "—";
+        const resp = document.getElementById("resp")?.value || "—";
+        const cpf = document.getElementById("cpf")?.value || "";
+        const tel = document.getElementById("tel")?.value || "—";
+        const escola = document.getElementById("escola")?.value || "—";
+        const endereco = document.getElementById("end")?.value || "—";
+
+        // ================= VALIDA CPF =================
+        if (!validarCPF(cpf)) {
+            alert("CPF inválido. Verifique e tente novamente.");
+            throw new Error("CPF inválido");
+        }
+
+    // ================= SERVIÇO =================
+    const tipoServico = calc.tipoServico || '—';
+    const escolaContraTurno = calc.escolaContraTurno || '—';
 
     // ================= SAÚDE =================
     const alergias = document.getElementById('alergias')?.value || 'Não informado';
@@ -255,6 +354,9 @@ function montarContrato() {
         telResp: tel,
         escola,
         endereco,
+
+        tipoServico,
+        escolaContraTurno,
 
         bairroIda: calc.bairroIda || '—',
         bairroVolta: calc.bairroVolta || '—',
@@ -273,6 +375,9 @@ function montarContrato() {
         tel,
         escola,
         endereco,
+
+        tipoServico,
+        escolaContraTurno,
 
         bairroIda: calc.bairroIda || '—',
         bairroVolta: calc.bairroVolta || '—',
@@ -293,11 +398,20 @@ function montarContrato() {
     };
 }
 
-
-// ================= PREVIEW =================
 // ================= PREVIEW =================
 function atualizarPreview() {
     const c = montarContrato();
+
+    const tipoServicoLabel = {
+        ida_volta: 'Ida e volta',
+        so_ida: 'Somente ida',
+        so_volta: 'Somente volta',
+        contra_turno: 'Contra turno'
+    }[c.tipoServico] || '—';
+
+    const contraTurnoHTML = c.tipoServico === 'contra_turno'
+        ? `<br><strong>Escola do contra turno:</strong> ${c.escolaContraTurno}`
+        : '';
 
     const bairroVoltaHTML = c.bairroVolta && c.bairroVolta !== '—'
         ? `<br>Bairro de volta: <strong>${c.bairroVolta}</strong>`
@@ -322,6 +436,11 @@ doravante denominada <strong>CONTRATADA</strong>, e de outro lado:
 <strong>Rota do Transporte Escolar:</strong><br>
 Bairro de ida: <strong>${c.bairroIda}</strong>
 ${bairroVoltaHTML}
+</p>
+
+<p>
+<strong>Tipo de serviço:</strong> ${tipoServicoLabel}
+${contraTurnoHTML}
 </p>
 
 <p>
@@ -384,10 +503,10 @@ O pagamento será realizado <strong>exclusivamente por boleto bancário</strong>
 
 <h4>DESCONTOS</h4>
 <ul>
-    <li>O desconto é aplicado somente para alunos no <strong>mesmo endereço</strong>.</li>
+    <li>O desconto é aplicado somente para mais de um aluno no <strong>mesmo endereço</strong>.</li>
     <li>Mesmo endereço e mesmo horário: <strong>10%</strong>.</li>
     <li>Mesmo endereço e horário diferente: <strong>5%</strong>.</li>
-    <li>Contraturno: <strong>5%</strong>.</li>
+    <li>Contraturno: Terceira Viagem: <strong>5%</strong>.</li>
 </ul>
 
 <p>
