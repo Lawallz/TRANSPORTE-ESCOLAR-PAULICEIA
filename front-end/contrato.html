@@ -1,7 +1,170 @@
-<!doctype html> 
-<html lang="pt-BR"> 
-    <head> 
-        <meta charset="utf-8"> 
-        <title>Transporte Escolar Paulicéia</title> 
-        <!-- RESPONSIVO / BOA PRÁTICA --> 
-         <meta name="viewport" content="width=device-width, initial-scale=1.0"> <link rel="stylesheet" href="assets/css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet"> </head> <body> <div class="wrap fade"> <header> <div class="logo"> <img src="assets/img/logo-escolar.jpeg" alt="Transporte Escolar Paulicéia"> </div> <div> <h2>Transporte Escolar na Paulicéia com Segurança e Pontualidade</h2> <p class="muted">Simulação e contrato digital</p> </div> <div class="header-actions"> <button class="btn ghost" onclick="history.back()">← Voltar</button> </div> </header> <div class="grid"> <main> <!-- RESPONSÁVEL --> <div class="card animate"> <h3>Informações do Aluno</h3> <select id="qtdCriancas" onchange="atualizarCamposCriancas()"> <option value="1">1 criança</option> <option value="2">2 crianças</option> <option value="3">3 crianças</option> </select> <div id="criancasWrap" class="mt8"> <label>Nomes das crianças</label> <div class="crianca"> <input class="nome-crianca" type="text" placeholder="Nome da criança 1"> </div> <div class="crianca"> <input class="nome-crianca" type="text" placeholder="Nome da criança 2"> </div> <div class="crianca"> <input class="nome-crianca" type="text" placeholder="Nome da criança 3"> </div> </div> <!-- RESPONSÁVEL --> <div class="card animate"> <h3>Dados do Responsável</h3> <label>Nome completo</label> <input id="resp" type="text" placeholder="Nome do responsável"> <label>CPF</label> <input id="cpf" type="text" placeholder="000.000.000-00"> <label>Telefone</label> <input id="tel" type="text" placeholder="(11) 9 9999-9999"> <label>Endereço</label> <input id="end" type="text" placeholder="Rua / Número / Referência"> </div> <!-- ALUNO --> <div class="card animate mt8"> <h3>Dados do Aluno</h3> <label>Escola</label> <select id="escola"> <option value="">Selecione a escola</option> <optgroup label="Públicas"> <option>EMEB Escritor Júlio Atlas</option> <option>EMEB Padre Fiorente Elena</option> <option>EMEB Caetano de Campos</option> <option>EMEB Vicente de Carvalho</option> <option>Creche Arlindo Ferreira</option> <option>EE Dr. Fausto Cardoso Figueira de Mello</option> <option>EE Ministro Laudo Ferreira de Camargo</option> <option>Instituto Jêsue Frantz</option> <option>Instituição Assistencial MeiMei (IAM)</option> </optgroup> <optgroup label="Particulares"> <option>Colégio Methodus</option> <option>Colégio Educare</option> <option>Colégio Vittare</option> <option>Quintal da Status</option> <option>Alegria Espaço Infantil</option> </optgroup> </select> <label>CPF do aluno (opcional)</label> <input id="cpf_aluno" type="text" placeholder="Somente se maior de idade"> <small class="muted"> Desconto progressivo aplicado automaticamente para irmãos. </small> <small class="muted"> O cálculo é baseado nos bairros de ida e volta. </small> <label>Tipo de rota</label> <select id="routeType"> <option value="diurna">Diurna (ida e volta)</option> <option value="fausto">Fausto (14h30 às 21h30)</option> </select> <label>Tipo de serviço</label> <select id="serviceType"> <option value="ida_volta">Ida e volta</option> <option value="so_ida">Somente ida</option> <option value="so_volta">Somente volta</option> </select> <label>Turno</label> <select id="turno"> <option value="manha">Manhã</option> <option value="tarde">Tarde</option> <option value="integral">Integral</option> </select> <label for="bairro">Bairro de Ida</label> <select id="bairroIda"> <option value="">Selecione o bairro</option> <optgroup label="Diadema"> <option value="Canhema">Canhema / Taboão</option> <option value="Nacoes">Nações</option> </optgroup> <optgroup label="São Bernardo do Campo"> <option value="VilaFlorida">Vila Flórida</option> <option value="VilaOriental">Vila Oriental</option> <option value="Borborema">Borborema</option> <option value="VilaAlice">Vila Alice</option> <option value="Pauliceia">Paulicéia</option> <option value="SantaCruz">Santa Cruz</option> </optgroup> </select> <label for="bairro">Bairro de Volta</label> <select id="bairroVolta"> <option value="">Selecione o bairro</option> <optgroup label="Diadema"> <option value="Canhema">Canhema / Taboão</option> <option value="Nacoes">Nações</option> </optgroup> <optgroup label="São Bernardo do Campo"> <option value="VilaFlorida">Vila Flórida</option> <option value="VilaOriental">Vila Oriental</option> <option value="Borborema">Borborema</option> <option value="VilaAlice">Vila Alice</option> <option value="Pauliceia">Paulicéia</option> <option value="SantaCruz">Santa Cruz</option> </optgroup> </select> <small class="muted"> Bairro de residência do aluno conforme área de atendimento. </small> <label>Data de início do serviço</label> <input id="data_inicio" type="date"> <label>Assinatura do responsável</label> <input id="assinatura" type="text" placeholder="Digite seu nome completo"> <hr class="mt12"> <div class="saude-aluno"> <h4>Informações de Saúde do Aluno</h4> <p> Essas informações são utilizadas exclusivamente para garantir a segurança do aluno durante o transporte. </p> <div class="saude-grid"> <div> <label>Alergias</label> <textarea id="alergias" placeholder="Não possui"></textarea> </div> <div> <label>Comorbidades</label> <textarea id="comorbidades" placeholder="Não possui"></textarea> </div> <div> <label>Síndromes</label> <textarea id="sindromes" placeholder="Não possui"></textarea> </div> <div> <label>Transtornos</label> <textarea id="transtornos" placeholder="Não possui"></textarea> </div> <div> <label>Limitações físicas</label> <textarea id="limitacoes" placeholder="Não possui"></textarea> </div> </div> <div class="saude-info"> Preencha com atenção. Em caso de dúvida, informe o responsável. </div> </div> <div class="btn-group mt12"> <button class="btn primary" id="simular">Simular</button> <button class="btn secondary" id="limpar">Limpar</button> </div> <div id="resultado" style="display:none;margin-top:10px"></div> <p class="small muted mt8"> Ao continuar, você concorda com o uso dos seus dados exclusivamente para simulação e elaboração do contrato. </p> </div> </main> <aside> <div class="card animate"> <h3>Pré-visualização do Contrato</h3> <div class="preview"> <div class="contract" id="contractDoc"> <h3>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</h3> <div id="contratoConteudo"></div> </div> <div class="btn-group mt12"> <button class="btn primary" id="baixarPdf">Baixar Contrato (PDF)</button> <button class="btn ghost" id="copiarTexto">Copiar Texto</button> </div> </div> </div> </aside> </div> <footer> Simulação automática • valores sujeitos à confirmação • Transporte Escolar Paulicéia </footer> </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> <script src="assets/js/app.js"></script> </body> </html>
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <title>Transporte Escolar Paulicéia</title>
+    <!-- RESPONSIVIDADE-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Poppins:wght@600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="wrap fade">
+        <header>
+            <div class="logo">
+                <img src="assets/img/logo-escolar.jpeg" alt="Transporte Escolar Paulicéia">
+            </div>
+
+            <div>
+                <h2>Transporte Escolar na Paulicéia com Segurança e Pontualidade</h2>
+                <p class="muted">Simulação e contrato digital</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn ghost" onclick="history.back()">← Voltar</button>
+            </div>
+        </header>
+        <div class="grid">
+
+            <main>
+                <!-- RESPONSÁVEL -->
+                <div class="card animate">
+                    <h3>Informações do Aluno</h3> <select id="qtdCriancas" onchange="atualizarCamposCriancas()">
+                        <option value="1">1 criança</option>
+                        <option value="2">2 crianças</option>
+                        <option value="3">3 crianças</option>
+                    </select>
+                    <div id="criancasWrap" class="mt8"> <label>Nomes das crianças</label>
+                        <div class="crianca"> <input class="nome-crianca" type="text" placeholder="Nome da criança 1">
+                        </div>
+                        <div class="crianca"> <input class="nome-crianca" type="text" placeholder="Nome da criança 2">
+                        </div>
+                        <div class="crianca"> <input class="nome-crianca" type="text" placeholder="Nome da criança 3">
+                        </div>
+                    </div> <!-- RESPONSÁVEL -->
+                    <div class="card animate">
+                        <h3>Dados do Responsável</h3> <label>Nome completo</label> <input id="resp" type="text"
+                            placeholder="Nome do responsável"> <label>CPF</label> <input id="cpf" type="text"
+                            placeholder="000.000.000-00"> <label>Telefone</label> <input id="tel" type="text"
+                            placeholder="(11) 9 9999-9999"> <label>Endereço</label> <input id="end" type="text"
+                            placeholder="Rua / Número / Referência">
+                    </div> <!-- ALUNO -->
+                    <div class="card animate mt8">
+                        <h3>Dados do Aluno</h3> <label>Escola</label> <select id="escola">
+                            <option value="">Selecione a escola</option>
+                            <optgroup label="Públicas">
+                                <option>EMEB Escritor Júlio Atlas</option>
+                                <option>EMEB Padre Fiorente Elena</option>
+                                <option>EMEB Caetano de Campos</option>
+                                <option>EMEB Vicente de Carvalho</option>
+                                <option>Creche Arlindo Ferreira</option>
+                                <option>EE Dr. Fausto Cardoso Figueira de Mello</option>
+                                <option>EE Ministro Laudo Ferreira de Camargo</option>
+                                <option>Instituto Jêsue Frantz</option>
+                                <option>Instituição Assistencial MeiMei (IAM)</option>
+                            </optgroup>
+                            <optgroup label="Particulares">
+                                <option>Colégio Methodus</option>
+                                <option>Colégio Educare</option>
+                                <option>Colégio Vittare</option>
+                                <option>Quintal da Status</option>
+                                <option>Alegria Espaço Infantil</option>
+                            </optgroup>
+                        </select> <label>CPF do aluno (opcional)</label> <input id="cpf_aluno" type="text"
+                            placeholder="Somente se maior de idade"> <small class="muted"> Desconto progressivo aplicado
+                            automaticamente para irmãos. </small> <small class="muted"> O cálculo é baseado nos bairros
+                            de ida e volta. </small> <label>Tipo de rota</label> <select id="routeType">
+                            <option value="diurna">Diurna (ida e volta)</option>
+                            <option value="fausto">Fausto (14h30 às 21h30)</option>
+                        </select> <label>Tipo de serviço</label> <select id="serviceType">
+                            <option value="ida_volta">Ida e volta</option>
+                            <option value="so_ida">Somente ida</option>
+                            <option value="so_volta">Somente volta</option>
+                        </select> <label>Turno</label> <select id="turno">
+                            <option value="manha">Manhã</option>
+                            <option value="tarde">Tarde</option>
+                            <option value="integral">Integral</option>
+                        </select> <label for="bairro">Bairro de Ida</label> <select id="bairroIda">
+                            <option value="">Selecione o bairro</option>
+                            <optgroup label="Diadema">
+                                <option value="Canhema">Canhema / Taboão</option>
+                                <option value="Nacoes">Nações</option>
+                            </optgroup>
+                            <optgroup label="São Bernardo do Campo">
+                                <option value="VilaFlorida">Vila Flórida</option>
+                                <option value="VilaOriental">Vila Oriental</option>
+                                <option value="Borborema">Borborema</option>
+                                <option value="VilaAlice">Vila Alice</option>
+                                <option value="Pauliceia">Paulicéia</option>
+                                <option value="SantaCruz">Santa Cruz</option>
+                            </optgroup>
+                        </select> <label for="bairro">Bairro de Volta</label> <select id="bairroVolta">
+                            <option value="">Selecione o bairro</option>
+                            <optgroup label="Diadema">
+                                <option value="Canhema">Canhema / Taboão</option>
+                                <option value="Nacoes">Nações</option>
+                            </optgroup>
+                            <optgroup label="São Bernardo do Campo">
+                                <option value="VilaFlorida">Vila Flórida</option>
+                                <option value="VilaOriental">Vila Oriental</option>
+                                <option value="Borborema">Borborema</option>
+                                <option value="VilaAlice">Vila Alice</option>
+                                <option value="Pauliceia">Paulicéia</option>
+                                <option value="SantaCruz">Santa Cruz</option>
+                            </optgroup>
+                        </select> <small class="muted"> Bairro de residência do aluno conforme área de atendimento.
+                        </small> <label>Data de início do serviço</label> <input id="data_inicio" type="date">
+                        <label>Assinatura do responsável</label> <input id="assinatura" type="text"
+                            placeholder="Digite seu nome completo">
+                        <hr class="mt12">
+                        <div class="saude-aluno">
+                            <h4>Informações de Saúde do Aluno</h4>
+                            <p> Essas informações são utilizadas exclusivamente para garantir a segurança do aluno
+                                durante o transporte. </p>
+                            <div class="saude-grid">
+                                <div> <label>Alergias</label> <textarea id="alergias"
+                                        placeholder="Não possui"></textarea> </div>
+                                <div> <label>Comorbidades</label> <textarea id="comorbidades"
+                                        placeholder="Não possui"></textarea> </div>
+                                <div> <label>Síndromes</label> <textarea id="sindromes"
+                                        placeholder="Não possui"></textarea> </div>
+                                <div> <label>Transtornos</label> <textarea id="transtornos"
+                                        placeholder="Não possui"></textarea> </div>
+                                <div> <label>Limitações físicas</label> <textarea id="limitacoes"
+                                        placeholder="Não possui"></textarea> </div>
+                            </div>
+                            <div class="saude-info"> Preencha com atenção. Em caso de dúvida, informe o responsável.
+                            </div>
+                        </div>
+                        <div class="btn-group mt12"> <button class="btn primary" id="simular">Simular</button> <button
+                                class="btn secondary" id="limpar">Limpar</button> </div>
+                        <div id="resultado" style="display:none;margin-top:10px"></div>
+                        <p class="small muted mt8"> Ao continuar, você concorda com o uso dos seus dados exclusivamente
+                            para simulação e elaboração do contrato. </p>
+                    </div>
+            </main>
+            <aside>
+                <div class="card animate">
+                    <h3>Pré-visualização do Contrato</h3>
+                    <div class="preview">
+                        <div class="contract" id="contractDoc">
+                            <h3>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</h3>
+                            <div id="contratoConteudo"></div>
+                        </div>
+                        <div class="btn-group mt12"> <button class="btn primary" id="baixarPdf">Baixar Contrato
+                                (PDF)</button> <button class="btn ghost" id="copiarTexto">Copiar Texto</button> </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+        <footer> Simulação automática • valores sujeitos à confirmação • Transporte Escolar Paulicéia </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+
+</html>
