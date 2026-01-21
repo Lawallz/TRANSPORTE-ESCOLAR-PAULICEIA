@@ -77,10 +77,46 @@
                                 <option>Colégio Vittare</option>
                                 <option>Quintal da Status</option>
                                 <option>Alegria Espaço Infantil</option>
-                            </optgroup>                        
-                    </select> 
-                     <small class="muted"> Caso os alunos (2 Ou Mais) sejam de escolas diferentes, preencher com a escola de uma das crianças. </small>
-                         </small>  
+                            </optgroup>
+                        </select>
+
+                        <!-- ESCOLAS MÚLTIPLAS -->
+                        <div id="escolasMultiplas" style="display:none; margin-top:8px;">
+                            <label>As crianças estudam na mesma escola?</label>
+                            <select id="mesmaEscola">
+                                <option value="sim">Sim</option>
+                                <option value="nao">Não</option>
+                            </select>
+
+                            <div id="escola2Wrap" style="display:none; margin-top:8px;">
+                                <label>Escola da outra criança</label>
+                                <select id="escola2">
+                                    <option value="">Selecione a escola</option>
+                                    <optgroup label="Públicas">
+                                        <option>EMEB Escritor Júlio Atlas</option>
+                                        <option>EMEB Padre Fiorente Elena</option>
+                                        <option>EMEB Caetano de Campos</option>
+                                        <option>EMEB Vicente de Carvalho</option>
+                                        <option>Creche Arlindo Ferreira</option>
+                                        <option>EE Dr. Fausto Cardoso Figueira de Mello</option>
+                                        <option>EE Ministro Laudo Ferreira de Camargo</option>
+                                        <option>Instituto Jêsue Frantz</option>
+                                        <option>Instituição Assistencial MeiMei (IAM)</option>
+                                    </optgroup>
+                                    <optgroup label="Particulares">
+                                        <option>Colégio Methodus</option>
+                                        <option>Colégio Educare</option>
+                                        <option>Colégio Vittare</option>
+                                        <option>Quintal da Status</option>
+                                        <option>Alegria Espaço Infantil</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+
+                        <small class="muted">
+                        Caso os alunos (2 ou mais) sejam de escolas diferentes, informe ambas.
+                        </small>
 
                         <label>CPF do aluno (opcional)</label> <input id="cpf_aluno" type="text"
                             placeholder="Somente se maior de idade"> <small class="muted"> Desconto progressivo aplicado
@@ -127,6 +163,8 @@
                                 <option value="VilaOriental">Vila Oriental</option>
                                 <option value="VilaAlice">Vila Alice</option>
                                 <option value="SantaCruz">Santa Cruz</option>
+                                <option value="JdABC">Jardim ABC</option>
+                                <option value="JdTakebe">Jardim Takebe</option>
                             </optgroup>
 
                             <optgroup label="São Bernardo do Campo">
@@ -149,6 +187,8 @@
                                 <option value="VilaOriental">Vila Oriental</option>
                                 <option value="VilaAlice">Vila Alice</option>
                                 <option value="SantaCruz">Santa Cruz</option>
+                                <option value="JdABC">Jardim ABC</option>
+                                <option value="JdTakebe">Jardim Takebe</option>
                             </optgroup>
 
                             <optgroup label="São Bernardo do Campo">

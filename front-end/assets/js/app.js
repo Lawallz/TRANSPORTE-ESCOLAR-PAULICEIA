@@ -163,6 +163,8 @@ function atualizarCamposCriancas() {
             input.value = ''; // limpa os extras
         }
     });
+
+    controlarEscolasMultiplas();
 }
 
 
@@ -312,7 +314,6 @@ function montarContrato() {
 
     let valorFinal = calc.total;
 
-
     // ================= DESCONTO CONTRA TURNO =================
     if (calc.tipoServico === 'contra_turno') {
         valorFinal *= 0.95; // 5% de desconto
@@ -320,21 +321,33 @@ function montarContrato() {
 
     // Desconto à vista
     if (parcelas === 1) {
-        valorFinal = valorFinal * 0.95;
+        valorFinal *= 0.95;
     }
 
-    // ================= DADOS =================
-        const resp = document.getElementById("resp")?.value || "—";
-        const cpf = document.getElementById("cpf")?.value || "";
-        const tel = document.getElementById("tel")?.value || "—";
-        const escola = document.getElementById("escola")?.value || "—";
-        const endereco = document.getElementById("end")?.value || "—";
+    // ================= DADOS RESPONSÁVEL =================
+    const resp = document.getElementById("resp")?.value || "—";
+    const cpf = document.getElementById("cpf")?.value || "";
+    const tel = document.getElementById("tel")?.value || "—";
+    const endereco = document.getElementById("end")?.value || "—";
 
-        // ================= VALIDA CPF =================
-        if (!validarCPF(cpf)) {
-            alert("CPF inválido. Verifique e tente novamente.");
-            throw new Error("CPF inválido");
-        }
+    // ================= VALIDA CPF =================
+    if (!validarCPF(cpf)) {
+        alert("CPF inválido. Verifique e tente novamente.");
+        throw new Error("CPF inválido");
+    }
+
+    // ================= ESCOLA(S) =================
+    // OBS: caso haja mais de um aluno em escolas diferentes,
+    // o responsável informa uma das escolas, conforme aviso no formulário
+    const escolasContrato = document.getElementById("escola")?.value || "—";
+
+    const mesmaEscola =
+    document.getElementById("mesmaEscola")?.value || "sim";
+
+const mesmaEscolaLabel =
+    mesmaEscola === 'sim'
+        ? 'Sim'
+        : 'Não (escolas distintas)';
 
     // ================= SERVIÇO =================
     const tipoServico = calc.tipoServico || '—';
@@ -347,12 +360,12 @@ function montarContrato() {
     const transtornos = document.getElementById('transtornos')?.value || 'Não informado';
     const limitacoes = document.getElementById('limitacoes')?.value || 'Não informado';
 
-    // ================= PLANILHA (🔥 ESSENCIAL) =================
+    // ================= PLANILHA =================
     CONTRATO_DADOS = {
         nomeResp: resp,
         cpfResp: cpf,
         telResp: tel,
-        escola,
+        escolasContrato,
         endereco,
 
         tipoServico,
@@ -373,7 +386,8 @@ function montarContrato() {
         resp,
         cpf,
         tel,
-        escola,
+        escolasContrato,
+        mesmaEscola: mesmaEscolaLabel,
         endereco,
 
         tipoServico,
@@ -428,7 +442,8 @@ doravante denominada <strong>CONTRATADA</strong>, e de outro lado:
 <p>
 <strong>Responsável Legal:</strong> ${c.resp}<br>
 <strong>CPF:</strong> ${c.cpf}<br>
-<strong>Escola:</strong> ${c.escola}<br>
+<strong>Escola(s) do(s) Aluno(s):</strong> ${c.escolasContrato}<br>
+<strong>Alunos estudam na mesma escola:</strong> ${c.mesmaEscola}<br>
 <strong>Endereço:</strong> ${c.endereco}
 </p>
 
@@ -755,3 +770,24 @@ document.getElementById("simular").addEventListener("click", function () {
 });
 
 document.addEventListener('DOMContentLoaded', atualizarCamposCriancas);
+
+function controlarEscolasMultiplas() {
+    const qtd = Number(document.getElementById('qtdCriancas')?.value || 1);
+    const bloco = document.getElementById('escolasMultiplas');
+
+    if (qtd >= 2) {
+        bloco.style.display = 'block';
+    } else {
+        bloco.style.display = 'none';
+        document.getElementById('escola2Wrap').style.display = 'none';
+    }
+}
+
+document.getElementById('qtdCriancas')
+    ?.addEventListener('change', controlarEscolasMultiplas);
+
+document.getElementById('mesmaEscola')
+    ?.addEventListener('change', e => {
+        document.getElementById('escola2Wrap').style.display =
+            e.target.value === 'nao' ? 'block' : 'none';
+    });
