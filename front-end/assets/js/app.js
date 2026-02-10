@@ -1,4 +1,13 @@
 let CONTRATO_DADOS = {};
+const VALOR_CONTRA_TURNO = 1800;
+
+document.getElementById("cpf").addEventListener("input", e => {
+    e.target.value = e.target.value
+        .replace(/\D/g, '')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+});
 
 // ================= UTIL =================
 function formatBR(v){
@@ -47,243 +56,320 @@ function criarParcelamentoUI() {
 document.addEventListener('DOMContentLoaded', criarParcelamentoUI);
 
 
-// ================= TABELA FIXA (VALORES MENSAIS BASE) =================
+// ================= TABELA FIXA (VALORES BASE ANUAIS) =================
 const VALORES = {
-    diurna: {
-        Pauliceia: 2880,
-        TaboaoDiadema: 3200,
-        Nacoes: 3000,
-        Canhema: 3000,
-        Borborema: 3000,
-        VilaAlice: 3000,
-        VilaFlorida: 3000,
-        VilaOriental: 3000,
-        SantaCruz: 3000,
-        TaboaoSBC: 3200
-    },
-    // 🔥 ROTA FAUSTO ATUALIZADA com base no fator de 1.28 (28% de aumento)
-    fausto: {
-        // Valores que já existiam
-        Pauliceia: 3730, // 2880 * 1.28 = 3686.4 
-        Canhema: 3840,   // 3000 * 1.28 = 3840
-        VilaAlice: 3840, // 3000 * 1.28 = 3840 
-        TaboaoDiadema: Math.round(3200 * 1.28), // 4096
-        Nacoes: Math.round(3000 * 1.28),        // 3840
-        Borborema: Math.round(3000 * 1.28),     // 3840
-        VilaFlorida: Math.round(3000 * 1.28),   // 3840
-        VilaOriental: Math.round(3000 * 1.28),  // 3840
-        SantaCruz: Math.round(3000 * 1.28),     // 3840
-        TaboaoSBC: Math.round(3200 * 1.28)      // 4096
-    }
+  // ================= ROTA DIURNA =================
+  diurna: {
+    Pauliceia: 2880,        // 12x 240
+    VilaAlice: 3000,        // 12x 250
+    VilaOriental: 3000,     // 12x 250
+    Canhema: 3000,          // 12x 250
+    SantaCruz: 3000,        // 12x 250
+    JdTakebe: 3000,         // 12x 250
+    JdABC: 3000,            // 12x 250
+    VilaFlorida: 3000,      // 12x 250
+    Borborema: 3000,        // 12x 250
+    TaboaoDiadema: 3120,    // 12x 260
+    TaboaoSBC: 3240,        // 12x 272,50
+    Nacoes: 3360,            // 12x 283,33
+    VilaSantaLuzia: 3240   // 12x 270
+  },
+
+  // ================= ROTA FAUSTO (14h às 21h) =================
+  fausto: {
+    Pauliceia: 3720,        // 12x 290
+    Canhema: 3840,          // 12x 300
+    JdABC: 3960,            // 12x 310
+    JdTakebe: 3960,         // 12x 310
+    VilaFlorida: 4080,      // 12x 320
+    Borborema: 4080,        // 12x 320
+    TaboaoDiadema: 4080     // 12x 320
+  }
 };
 
-// ================= MAPA CEP → BAIRRO CORRIGIDO =================
-function bairroPorCep(cep){
-    if (!cep) return null;
+function handleServiceType() {
+    const serviceType = document.getElementById('serviceType');
+    const escolaDiv = document.getElementById('contraTurnoEscola');
 
-    // Remove caracteres não numéricos e converte para número
-    const n = parseInt(cep.replace(/\D/g, ''), 10);
-    if (isNaN(n)) return null;
+    if (!serviceType || !escolaDiv) return;
 
-    // --- DIADEMA (Faixas 099xxxx) ---
-    // Canhema (09940-000 a 09945-999) - Inclui Taboão
-    if (n >= 9940000 && n <= 9945999) return "Canhema/Taboão";
-    // Nacoes (09960-000 a 09969-999)
-    if (n >= 9960000 && n <= 9969999) return "Nacoes";
-    
-    // --- SÃO BERNARDO DO CAMPO (Faixas 096xxxx) ---
-    // PRIORIZE as faixas específicas primeiro!
-    
-    // Vila Florida (09635-000 a 09639-999)
-    if (n >= 9635000 && n <= 9639999) return "VilaFlorida";
-    // Vila Oriental (09667-000 a 09669-999)
-    if (n >= 9667000 && n <= 9669999) return "VilaOriental";
-    // Borborema (09685-000 a 09687-999)
-    if (n >= 9685000 && n <= 9687999) return "Borborema";
-    // Vila Alice (09680-000 a 09684-999)
-    if (n >= 9680000 && n <= 9684999) return "VilaAlice";
-    
-    // Faixas mais amplas de SBC
-    // Paulicéia (09650-000 a 09699-999) - Ajustada para não conflitar
-    if (n >= 9650000 && n <= 9699999) return "Pauliceia"; 
-    // Santa Cruz (09600-000 a 09609-999)
-    if (n >= 9600000 && n <= 9609999) return "SantaCruz";
-
-    return null;
+    if (serviceType.value === 'contra_turno') {
+        escolaDiv.style.display = 'block';
+    } else {
+        escolaDiv.style.display = 'none';
+        const escolaSelect = document.getElementById('escolaContraTurno');
+        if (escolaSelect) escolaSelect.value = '';
+    }
 }
 
+// Atualizada para verificar o bairro diretamente
+function bairroPorNome(nomeBairro){
+    if (!nomeBairro) return null;
+
+    const bairros = {
+        "Canhema/Taboão": "Canhema/Taboão",
+        "Nacoes": "Nacoes",
+        "VilaFlorida": "Vila Florida",
+        "VilaOriental": "Vila Oriental",
+        "Borborema": "Borborema",
+        "VilaAlice": "Vila Alice",
+        "Pauliceia": "Pauliceia",
+        "SantaCruz": "Santa Cruz"
+    };
+
+    return bairros[nomeBairro] || null;
+}
+
+
 // ================= NOMES DAS CRIANÇAS =================
-function obterCriancas(){
+function obterCriancas() {
     const qtd = parseInt(
         document.getElementById('qtdCriancas')?.value || 1
     );
 
     return Array.from(document.querySelectorAll('.nome-crianca'))
-        .slice(0, qtd)
-        .map(i => i.value.trim())
-        .filter(Boolean);
+        .slice(0, qtd) // 🔥 só pega a quantidade escolhida
+        .map(input => input.value.trim())
+        .filter(nome => nome !== '');
 }
 
-function validarCriancas(){
-    const nomes = obterCriancas();
+function validarCriancas() {
     const qtd = parseInt(
         document.getElementById('qtdCriancas')?.value || 1
     );
 
-    if (nomes.length < qtd) {
-        alert('Preencha o nome de todas as crianças.');
+    const nomes = obterCriancas();
+
+    if (nomes.length !== qtd) {
+        alert(`Preencha o nome de ${qtd} criança(s).`);
         return false;
     }
+
     return true;
 }
 
-// ================= CALCULO =================
-function calcularValor() {
-    const route = document.getElementById('routeType')?.value;
-    const serviceType = document.getElementById('serviceType')?.value;
-
-    const cepIda = document.getElementById('cepIda')?.value;
-    const cepVolta = document.getElementById('cepVolta')?.value;
-
-    const bairroIda = bairroPorCep(cepIda);
-    const bairroVolta = bairroPorCep(cepVolta);
-
-   if (!bairroIda || !bairroVolta) {
-    alert(
-        'CEP inválido ou fora da área atendida.\n' +
-        'Entre em contato para confirmação manual.'
-    );
-    throw new Error('CEP inválido');
-}
-
-    const qtdCriancas = parseInt(
+function atualizarCamposCriancas() {
+    const qtd = parseInt(
         document.getElementById('qtdCriancas')?.value || 1
     );
 
-    // fallback WhatsApp (continua funcionando)
-    if (
-        !VALORES[route] ||
-        !VALORES[route][bairroIda] ||
-        !VALORES[route][bairroVolta]
-    ) {
-        alert(
-            'Este CEP exige confirmação manual.\n' +
-            'Você será direcionado para o WhatsApp.'
-        );
+    const inputs = document.querySelectorAll('.nome-crianca');
 
-        window.open(
-            'https://wa.me/5511940327711?text=' +
-            encodeURIComponent(
-                `Olá! Gostaria de confirmar o valor do transporte escolar.\n` +
-                `CEP ida: ${cepIda}\nCEP volta: ${cepVolta}`
-            ),
-            '_blank'
-        );
+    inputs.forEach((input, index) => {
+        if (index < qtd) {
+            input.style.display = 'block';
+        } else {
+            input.style.display = 'none';
+            input.value = ''; // limpa os extras
+        }
+    });
 
-        throw new Error('Valor manual');
-    }
-
-    let valorBase = 0;
-
-    // 🔥 REGRA DE CÁLCULO POR TIPO DE SERVIÇO
-    if (serviceType === 'ida_volta') {
-        valorBase =
-            (VALORES[route][bairroIda] * 0.5) +
-            (VALORES[route][bairroVolta] * 0.5);
-    }
-
-   if (serviceType === 'so_ida') {
-    valorBase = VALORES[route][bairroIda] * 0.5;
+    controlarEscolasMultiplas();
 }
 
-if (serviceType === 'so_volta') {
-    valorBase = VALORES[route][bairroVolta] * 0.5;
-}
+
+function calcularValor() {
+    const bairroIda = document.getElementById('bairroIda')?.value;
+    const bairroVolta = document.getElementById('bairroVolta')?.value;
+    const tipoServico = document.getElementById('serviceType')?.value || 'ida_volta';
+    const tipoRota = document.getElementById('routeType')?.value || 'diurna';
+    const escolaContraTurno = document.getElementById('escolaContraTurno')?.value;
+    
+    // Pega a opção de horário para irmãos (mesmaEscola)
+    const mesmaEscola = document.getElementById("mesmaEscola")?.value || "sim";
+
+    const criancas = obterCriancas();
+    const qtdCriancas = criancas.length;
 
     let total = 0;
 
-        for (let i = 0; i < qtdCriancas; i++) {
-        if (i === 0) total += valorBase;
-        else if (i === 1) total += valorBase * 0.9;
-        else total += valorBase * 0.85;
-}
+    // ================= BASE (ROTAS) =================
+    const servicoBase = tipoServico === 'contra_turno' ? 'ida_volta' : tipoServico;
+
+    // IDA + VOLTA
+    if (servicoBase === 'ida_volta') {
+        if (!bairroIda || !bairroVolta) {
+            alert("Selecione bairro de ida e de volta.");
+            throw new Error('Bairros incompletos');
+        }
+        const valorIda = VALORES[tipoRota][bairroIda];
+        const valorVolta = VALORES[tipoRota][bairroVolta];
+        if (!valorIda || !valorVolta) {
+            alert("Valor do bairro não encontrado.");
+            throw new Error('Valor inválido');
+        }
+        total = (valorIda * 0.5) + (valorVolta * 0.5);
+    }
+
+    // SÓ IDA
+    if (servicoBase === 'so_ida') {
+        const valor = VALORES[tipoRota][bairroIda];
+        if (!valor) { alert("Selecione bairro de ida."); throw new Error('Inválido'); }
+        total = valor * 0.7;
+    }
+
+    // SÓ VOLTA
+    if (servicoBase === 'so_volta') {
+        const valor = VALORES[tipoRota][bairroVolta];
+        if (!valor) { alert("Selecione bairro de volta."); throw new Error('Inválido'); }
+        total = valor * 0.7;
+    }
+
+    // ================= APLICAÇÃO DE DESCONTOS (IRMÃOS) =================
+    total *= qtdCriancas;
+
+    if (qtdCriancas >= 2) {
+        if (mesmaEscola === 'sim') {
+            total *= 0.90; // 10% de desconto (mesmo endereço e mesmo horário)
+        } else {
+            total *= 0.95; // 5% de desconto (mesmo endereço e horários diferentes)
+        }
+    }
+
+    // ================= CONTRA TURNO (TERCEIRA VIAGEM) =================
+    if (tipoServico === 'contra_turno') {
+        if (!escolaContraTurno) {
+            alert("Selecione a escola do contra turno.");
+            throw new Error('Escola contra turno ausente');
+        }
+        total += VALOR_CONTRA_TURNO; // Soma R$ 1800
+        total *= 0.95; // 5% de desconto do contra turno (Terceira Viagem)
+    }
 
     return {
         total,
-        bairroIda,
-        bairroVolta,
-        cepIda,
-        cepVolta,
-        criancas: obterCriancas()
+        bairroIda: bairroIda || '—',
+        bairroVolta: bairroVolta || '—',
+        criancas,
+        tipoServico,
+        escolaContraTurno: escolaContraTurno || '—'
     };
 }
 
-// ================= CONTRATO =================
-function montarContrato(){
-    if (!validarCriancas()) {
-        throw new Error('Validação falhou');
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, '');
+
+    if (cpf.length !== 11) return false;
+
+    // Elimina CPFs inválidos conhecidos
+    if (/^(\d)\1+$/.test(cpf)) return false;
+
+    let soma = 0;
+    let resto;
+
+    // Primeiro dígito
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
     }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+    soma = 0;
+
+    // Segundo dígito
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+
+    return true;
+}
+
+
+// Função para montar o contrato
+function montarContrato() {
+    if (!validarCriancas()) throw new Error('Validação falhou');
 
     const calc = calcularValor();
+    if (!calc) throw new Error('Cálculo inválido');
 
-    // garante valor padrão caso a UI ainda não tenha rodado
-    const parcelas = typeof parcelasSelecionadas === 'number'
-        ? parcelasSelecionadas
-        : 12;
+    const parcelas = typeof parcelasSelecionadas === 'number' ? parcelasSelecionadas : 12;
 
+    // O valorFinal já vem com os descontos de Irmãos e Contraturno da função calcularValor
     let valorFinal = calc.total;
 
-    // 5% de desconto à vista
+    // Desconto à vista (apenas se for 1 parcela)
     if (parcelas === 1) {
-        valorFinal = valorFinal * 0.95;
+        valorFinal *= 0.95;
     }
 
-CONTRATO_DADOS = {
-    nomeResp: document.getElementById("resp")?.value || "—",
-    cpfResp: document.getElementById("cpf")?.value || "—",
-    telResp: document.getElementById("tel")?.value || "—",
-    escola: document.getElementById("escola")?.value || "—",
+    // DADOS RESPONSÁVEL
+    const resp = document.getElementById("resp")?.value || "—";
+    const cpf = document.getElementById("cpf")?.value || "";
+    const tel = document.getElementById("tel")?.value || "—";
+    const endereco = document.getElementById("end")?.value || "—";
 
-    endereco: document.getElementById("end")?.value || "—",
-    cep: document.getElementById("cepIda")?.value || "—",
+    if (!validarCPF(cpf)) {
+        alert("CPF inválido.");
+        throw new Error("CPF inválido");
+    }
 
-    valorTotal: formatBR(valorFinal),
-    parcelas: parcelas,
-    valorParcela: formatBR(valorFinal / parcelas),
+    const escolasContrato = document.getElementById("escola")?.value || "—";
+    const mesmaEscola = document.getElementById("mesmaEscola")?.value || "sim";
+    const mesmaEscolaLabel = mesmaEscola === 'sim' ? 'Sim' : 'Não (escolas distintas)';
 
-    alunos: calc.criancas.join(", "),
-};
+    const tipoServico = calc.tipoServico || '—';
+    const escolaContraTurno = calc.escolaContraTurno || '—';
+
+    // SAÚDE
+    const alergias = document.getElementById('alergias')?.value || 'Não informado';
+    const comorbidades = document.getElementById('comorbidades')?.value || 'Não informado';
+    const sindromes = document.getElementById('sindromes')?.value || 'Não informado';
+    const transtornos = document.getElementById('transtornos')?.value || 'Não informado';
+    const limitacoes = document.getElementById('limitacoes')?.value || 'Não informado';
+
+    // PLANILHA
+    CONTRATO_DADOS = {
+        nomeResp: resp,
+        cpfResp: cpf,
+        telResp: tel,
+        escola: escolasContrato, // Corrigido de escolasContrato para escola para bater com o Sheets
+        endereco,
+        tipoServico,
+        escolaContraTurno,
+        bairroIda: calc.bairroIda || '—',
+        bairroVolta: calc.bairroVolta || '—',
+        alunos: calc.criancas.join(', '),
+        parcelas,
+        valorTotal: formatBR(valorFinal),
+        valorParcela: formatBR(valorFinal / parcelas)
+    };
 
     return {
-        resp: document.getElementById('resp')?.value || '—',
-        cpf: document.getElementById('cpf')?.value || '—',
-        escola: document.getElementById('escola')?.value || '—',
-        turno: document.getElementById('turno')?.value || '—',
-        servico: document.getElementById('serviceType')?.value || '—',
-        inicio: document.getElementById('data_inicio')?.value || '—',
-        assinatura: document.getElementById('assinatura')?.value || '—',
-        alergias: document.getElementById('alergias')?.value || 'Não informado',
-        comorbidades: document.getElementById('comorbidades')?.value || 'Não informado',
-        sindromes: document.getElementById('sindromes')?.value || 'Não informado',
-        transtornos: document.getElementById('transtornos')?.value || 'Não informado',
-        limitacoes: document.getElementById('limitacoes')?.value || 'Não informado',
-
+        resp, cpf, tel, escolasContrato,
+        mesmaEscola: mesmaEscolaLabel,
+        endereco, tipoServico, escolaContraTurno,
+        bairroIda: calc.bairroIda,
+        bairroVolta: calc.bairroVolta,
         alunos: calc.criancas.join(', '),
-
-        bairroTexto:
-`CEP ida: ${calc.cepIda} (${calc.bairroIda})
-CEP volta: ${calc.cepVolta} (${calc.bairroVolta})`,
-
         valorMensal: valorFinal,
-        parcelas: parcelas,
-        valorParcela: valorFinal / parcelas
-
+        valorParcela: valorFinal / parcelas,
+        parcelas,
+        alergias, comorbidades, sindromes, transtornos, limitacoes,
+        assinatura: resp
     };
 }
-
 // ================= PREVIEW =================
-function atualizarPreview(){
+function atualizarPreview() {
     const c = montarContrato();
+
+    const tipoServicoLabel = {
+        ida_volta: 'Ida e volta',
+        so_ida: 'Somente ida',
+        so_volta: 'Somente volta',
+        contra_turno: 'Contra turno'
+    }[c.tipoServico] || '—';
+
+    const contraTurnoHTML = c.tipoServico === 'contra_turno'
+        ? `<br><strong>Escola do contra turno:</strong> ${c.escolaContraTurno}`
+        : '';
+
+    const bairroVoltaHTML = c.bairroVolta && c.bairroVolta !== '—'
+        ? `<br>Bairro de volta: <strong>${c.bairroVolta}</strong>`
+        : '';
 
     const contratoHTML = `
 
@@ -296,7 +382,20 @@ doravante denominada <strong>CONTRATADA</strong>, e de outro lado:
 <p>
 <strong>Responsável Legal:</strong> ${c.resp}<br>
 <strong>CPF:</strong> ${c.cpf}<br>
-<strong>Escola:</strong> ${c.escola}
+<strong>Escola(s) do(s) Aluno(s):</strong> ${c.escolasContrato}<br>
+<strong>Alunos estudam na mesma escola:</strong> ${c.mesmaEscola}<br>
+<strong>Endereço:</strong> ${c.endereco}
+</p>
+
+<p>
+<strong>Rota do Transporte Escolar:</strong><br>
+Bairro de ida: <strong>${c.bairroIda}</strong>
+${bairroVoltaHTML}
+</p>
+
+<p>
+<strong>Tipo de serviço:</strong> ${tipoServicoLabel}
+${contraTurnoHTML}
 </p>
 
 <p>
@@ -348,9 +447,9 @@ do contrato caso a CONTRATADA não tenha possibilidade de atender a nova rota.
 
 <h4>CLÁUSULA 3ª – DO VALOR, PAGAMENTO E DESCONTOS</h4>
 <p>
-O valor anual do contrato é de <strong>${formatBR(c.valorMensal)}</strong>,
-podendo ser pago em <strong>${c.parcelas}</strong> parcela(s) de
-<strong>${formatBR(c.valorParcela)}</strong>.
+O valor total do contrato é de <strong>${formatBR(c.valorMensal)}</strong>,
+a ser pago em <strong>${c.parcelas}</strong> parcela(s) mensais de
+<strong>${formatBR(c.valorParcela)}</strong>
 </p>
 
 <p>
@@ -359,10 +458,10 @@ O pagamento será realizado <strong>exclusivamente por boleto bancário</strong>
 
 <h4>DESCONTOS</h4>
 <ul>
-    <li>O desconto é aplicado somente para alunos no <strong>mesmo endereço</strong>.</li>
+    <li>O desconto é aplicado somente para mais de um aluno no <strong>mesmo endereço</strong>.</li>
     <li>Mesmo endereço e mesmo horário: <strong>10%</strong>.</li>
     <li>Mesmo endereço e horário diferente: <strong>5%</strong>.</li>
-    <li>Contraturno: <strong>5%</strong>.</li>
+    <li>Contraturno: Terceira Viagem: <strong>5%</strong>.</li>
 </ul>
 
 <p>
@@ -460,11 +559,44 @@ observado como referência percentual mínimo de <strong>2% do total de alunos</
 <strong>Assinatura do responsável:</strong><br>
 ${c.assinatura}
 </p>
-    `;
+`;
 
     document.getElementById('contratoConteudo').innerHTML = contratoHTML;
     document.getElementById('resultado').style.display = 'block';
 }
+
+// ================= CONTROLE DE EXIBIÇÃO DOS CAMPOS DE ROTA =================
+document.addEventListener('DOMContentLoaded', () => {
+    const serviceSelect = document.getElementById('serviceType');
+    const bairroIdaSelect = document.getElementById('bairroIda');
+    const bairroVoltaSelect = document.getElementById('bairroVolta');
+
+    if (!serviceSelect || !bairroIdaSelect || !bairroVoltaSelect) return;
+
+    function atualizarCamposRota() {
+        const tipo = serviceSelect.value;
+
+        // Reset visual
+        bairroIdaSelect.style.display = '';
+        bairroVoltaSelect.style.display = '';
+
+        // Só ida → esconde volta
+        if (tipo === 'so_ida') {
+            bairroVoltaSelect.style.display = 'none';
+            bairroVoltaSelect.value = '';
+        }
+
+        // Só volta → esconde ida
+        if (tipo === 'so_volta') {
+            bairroIdaSelect.style.display = 'none';
+            bairroIdaSelect.value = '';
+        }
+    }
+
+    serviceSelect.addEventListener('change', atualizarCamposRota);
+    atualizarCamposRota(); // executa ao carregar a página
+});
+
 
 // ================= EVENTOS =================
 
@@ -576,3 +708,26 @@ document.getElementById("simular").addEventListener("click", function () {
         body: dados
     });
 });
+
+document.addEventListener('DOMContentLoaded', atualizarCamposCriancas);
+
+function controlarEscolasMultiplas() {
+    const qtd = Number(document.getElementById('qtdCriancas')?.value || 1);
+    const bloco = document.getElementById('escolasMultiplas');
+
+    if (qtd >= 2) {
+        bloco.style.display = 'block';
+    } else {
+        bloco.style.display = 'none';
+        document.getElementById('escola2Wrap').style.display = 'none';
+    }
+}
+
+document.getElementById('qtdCriancas')
+    ?.addEventListener('change', controlarEscolasMultiplas);
+
+document.getElementById('mesmaEscola')
+    ?.addEventListener('change', e => {
+        document.getElementById('escola2Wrap').style.display =
+            e.target.value === 'nao' ? 'block' : 'none';
+    });
