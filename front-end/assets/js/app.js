@@ -671,7 +671,6 @@ document.getElementById('copiarTexto')?.addEventListener('click', () => {
 
 /* =========================================================
    ENVIO DO CONTRATO PARA GOOGLE SHEETS
-   (100% compatível com seu HTML e Apps Script)
 ========================================================= */
 
 document.getElementById("simular").addEventListener("click", function () {
