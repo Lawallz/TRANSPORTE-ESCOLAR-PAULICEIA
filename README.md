@@ -33,4 +33,17 @@ Desenvolvido para otimizar a experiência dos responsáveis legais, o portal do 
 
 2. Sirva o projeto localmente utilizando um servidor estático:
    ```bash
-   npx serve .
+   npx serve front-end
+
+   ```
+
+3. Abra o endereço informado no terminal. A página inicial está em `index.html`; o simulador está em `contrato.html`.
+
+## Organização dos arquivos
+
+- [`front-end/index.html`](front-end/index.html): página institucional.
+- [`front-end/contrato.html`](front-end/contrato.html): formulário e simulação de contrato.
+- [`front-end/assets/`](front-end/assets/): estilos, scripts e mídias.
+- [`back-end/server/`](back-end/server/): código do servidor e persistência.
+
+O comando acima serve apenas o frontend. Ele não inicia o backend nem configura integrações externas. Para testar formulários e contratos, use dados fictícios e confira separadamente os destinos de envio configurados nos scripts.
