@@ -20,10 +20,13 @@ Desenvolvido para otimizar a experiência dos responsáveis legais, o portal do 
 
 ## Tecnologias Utilizadas
 
-* JavaScript (ES6+): Manipulação de DOM, formatação de moeda, validação de CPF e regras de negócio.
-* UI Interativa: Event listeners reativos para manipulação dinâmica de campos de formulário e visibilidade condicional baseada na seleção do usuário.
-* Bibliotecas Externas: html2canvas e jsPDF para renderização e download de documentos contratuais.
-* APIs Externas: Integração via requisições POST com Google Apps Script para persistência de dados em planilha.
+* React + Vite: interface componentizada e desenvolvimento rápido.
+* TypeScript em modo estrito: contratos tipados para alunos, responsáveis, rotas, bairros e preços.
+* Tailwind CSS: design responsivo e mobile-first.
+* Lucide React: ícones acessíveis e consistentes.
+* Vitest: testes que protegem a compatibilidade do cálculo com a versão legada.
+
+Durante a migração, `contrato.html` e `assets/js/app.js` permanecem no repositório como implementação legada de referência.
 
 ---
 
@@ -31,19 +34,26 @@ Desenvolvido para otimizar a experiência dos responsáveis legais, o portal do 
 
 1. Clone ou baixe os arquivos do projeto na sua máquina.
 
-2. Sirva o projeto localmente utilizando um servidor estático:
+2. Instale as dependências e inicie o Vite:
    ```bash
-   npx serve front-end
-
+   cd front-end
+   npm install
+   npm run dev
    ```
 
-3. Abra o endereço informado no terminal. A página inicial está em `index.html`; o simulador está em `contrato.html`.
+3. Abra o endereço informado no terminal.
+
+Antes de publicar, valide a base:
+
+```bash
+npm test
+npm run build
+```
 
 ## Organização dos arquivos
 
-- [`front-end/index.html`](front-end/index.html): página institucional.
-- [`front-end/contrato.html`](front-end/contrato.html): formulário e simulação de contrato.
-- [`front-end/assets/`](front-end/assets/): estilos, scripts e mídias.
+- [`front-end/src/`](front-end/src/): aplicação React e regras TypeScript.
+- [`front-end/src/features/pricing/`](front-end/src/features/pricing/): motor de cálculo isolado e seus testes.
+- [`front-end/contrato.html`](front-end/contrato.html): simulador legado mantido como referência temporária.
+- [`front-end/assets/`](front-end/assets/): mídias e implementação legada.
 - [`back-end/server/`](back-end/server/): código do servidor e persistência.
-
-O comando acima serve apenas o frontend. Ele não inicia o backend nem configura integrações externas. Para testar formulários e contratos, use dados fictícios e confira separadamente os destinos de envio configurados nos scripts.

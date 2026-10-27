@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-brand-50: #eff8ff;
+  --color-brand-100: #dcedff;
+  --color-brand-500: #2776a8;
+  --color-brand-700: #194f78;
+  --color-brand-900: #123b5d;
+  --color-sun-400: #f6c453;
+  --color-sun-500: #e9ab24;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { margin: 0; min-width: 320px; background: #fafaf9; }
+  button, input, select, textarea { font: inherit; }
+  :focus-visible { outline: 3px solid color-mix(in srgb, #2776a8 35%, transparent); outline-offset: 2px; }
+}
+
+@layer components {
+  .field-label { @apply mb-1.5 block text-sm font-semibold text-slate-700; }
+  .field-control { @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100; }
+  .primary-button { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-900 px-5 py-3 font-bold text-white shadow-lg shadow-brand-900/15 transition hover:-translate-y-0.5 hover:bg-brand-700; }
+  .secondary-button { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 font-bold text-slate-800 transition hover:border-brand-500 hover:text-brand-700; }
+}
